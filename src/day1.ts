@@ -1,5 +1,5 @@
 const calculate = () => {
-  return 3;
-};
+  return 3
+}
 
-export default calculate;
+export default calculate
