@@ -1,7 +1,14 @@
 import { readFileSync } from 'fs'
 
-const readArray = (path: string) => {
+const readStringArray = (path: string) => {
   return readFileSync(path, { encoding: 'utf8' }).trim().split('\n')
 }
 
-export default { readArray }
+const readIntArray = (path: string) => {
+  return readFileSync(path, { encoding: 'utf8' })
+    .trim()
+    .split('\n')
+    .map((s) => parseInt(s))
+}
+
+export default { readStringArray, readIntArray }
