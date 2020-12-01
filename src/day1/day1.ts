@@ -1,7 +1,12 @@
-const calculate = (weights: Array<number>) => {
-  return weights.reduce((accumulator, currentValue) => {
-    return accumulator + Math.floor(currentValue / 3) - 2
-  }, 0)
+const findProduct = (entries: Array<number>) => {
+  let result: number = undefined
+  entries.forEach((entry) => {
+    if (entries.includes(2020 - entry)) {
+      result = (2020 - entry) * entry
+    }
+  })
+
+  return result
 }
 
-export default calculate
+export default findProduct
