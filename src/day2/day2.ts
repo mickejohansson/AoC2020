@@ -24,4 +24,22 @@ const nbrValidPasswords = (lines: Array<string>) => {
   return nbrCorrect
 }
 
-export default { nbrValidPasswords }
+const nbrValidTobogganPasswords = (lines: Array<string>) => {
+  const entries = lines.map((line) => entry(line))
+
+  let nbrCorrect = 0
+  entries.forEach((entry) => {
+    const firstChar = entry.password.charAt(entry.range[0] - 1)
+    const secondChar = entry.password.charAt(entry.range[1] - 1)
+    if (
+      (firstChar === entry.letter || secondChar === entry.letter) &&
+      firstChar !== secondChar
+    ) {
+      nbrCorrect += 1
+    }
+  })
+
+  return nbrCorrect
+}
+
+export default { nbrValidPasswords, nbrValidTobogganPasswords }
