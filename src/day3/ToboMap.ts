@@ -14,7 +14,7 @@ export class ToboMap {
   constructor(path: string) {
     const lines = fileReader.readStringArray(path)
     this.width = lines[0].length
-    this.height = lines.length + 1
+    this.height = lines.length + 2
 
     lines.forEach((line) => {
       const row: Array<MapMarker> = []
@@ -29,6 +29,7 @@ export class ToboMap {
     })
     const finishLine: Array<MapMarker> = new Array<MapMarker>(this.width)
     finishLine.fill(MapMarker.FINISH)
+    this.mapData.push(finishLine)
     this.mapData.push(finishLine)
   }
 
