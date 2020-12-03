@@ -15,3 +15,8 @@ test('it returns the number of hit trees', () => {
   const toboMap = new ToboMap(__dirname + '/testInput.txt')
   expect(toboMap.getNumberHitTrees()).toBe(7)
 })
+
+test('it returns the number of hit trees for the big map', () => {
+  const toboMap = new ToboMap(__dirname + '/input.txt')
+  expect(toboMap.getNumberHitTrees()).toBe(7)
+})
