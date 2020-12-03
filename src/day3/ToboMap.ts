@@ -38,7 +38,7 @@ export class ToboMap {
     return this.mapData[wrappingY][wrappingX]
   }
 
-  getNumberHitTrees(): number {
+  getNumberHitTrees(stepRight: number, stepDown: number): number {
     let currentMarker: MapMarker = undefined
     let currentX = 0
     let currentY = 0
@@ -48,8 +48,8 @@ export class ToboMap {
       if (currentMarker === MapMarker.TREE) {
         nbrHitTrees++
       }
-      currentX += 3
-      currentY += 1
+      currentX += stepRight
+      currentY += stepDown
     }
 
     return nbrHitTrees

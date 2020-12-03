@@ -11,12 +11,12 @@ test('it returns the correct markers', () => {
   expect(toboMap.getMarkerAt(11, 9)).toBe(MapMarker.TREE)
 })
 
-test('it returns the number of hit trees', () => {
+test('it returns the number of hit trees in the small map', () => {
   const toboMap = new ToboMap(__dirname + '/testInput.txt')
-  expect(toboMap.getNumberHitTrees()).toBe(7)
+  expect(toboMap.getNumberHitTrees(3, 1)).toBe(7)
 })
 
 test('it returns the number of hit trees for the big map', () => {
   const toboMap = new ToboMap(__dirname + '/input.txt')
-  expect(toboMap.getNumberHitTrees()).toBe(7)
+  expect(toboMap.getNumberHitTrees(3, 1)).toBe(181)
 })
