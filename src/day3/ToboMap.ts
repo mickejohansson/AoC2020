@@ -27,6 +27,8 @@ export class ToboMap {
   }
 
   getMarkerAt(x: number, y: number): MapMarker {
-    return this.mapData[y][x]
+    const wrappingX = x % this.mapData.length
+    const wrappingY = y % this.mapData[0].length
+    return this.mapData[wrappingY][wrappingX]
   }
 }
