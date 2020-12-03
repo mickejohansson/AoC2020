@@ -8,9 +8,14 @@ export enum MapMarker {
 
 export class ToboMap {
   mapData: Array<Array<MapMarker>> = []
+  width: number
+  height: number
 
   constructor(path: string) {
     const lines = fileReader.readStringArray(path)
+    this.width = lines[0].length
+    this.height = lines.length + 1
+
     lines.forEach((line) => {
       const row: Array<MapMarker> = []
       line.split('').forEach((c) => {
@@ -21,14 +26,32 @@ export class ToboMap {
         }
       })
       this.mapData.push(row)
-      const finishLine: Array<MapMarker> = new Array<MapMarker>(row.length)
-      finishLine.fill(MapMarker.FINISH)
     })
+    const finishLine: Array<MapMarker> = new Array<MapMarker>(this.width)
+    finishLine.fill(MapMarker.FINISH)
+    this.mapData.push(finishLine)
   }
 
   getMarkerAt(x: number, y: number): MapMarker {
-    const wrappingX = x % this.mapData.length
-    const wrappingY = y % this.mapData[0].length
+    const wrappingX = x % this.width
+    const wrappingY = y % this.height
     return this.mapData[wrappingY][wrappingX]
+  }
+
+  getNumberHitTrees(): number {
+    let currentMarker: MapMarker = undefined
+    let currentX = 0
+    let currentY = 0
+    let nbrHitTrees = 0
+    while (currentMarker !== MapMarker.FINISH) {
+      currentMarker = this.getMarkerAt(currentX, currentY)
+      if (currentMarker === MapMarker.TREE) {
+        nbrHitTrees++
+      }
+      currentX += 3
+      currentY += 1
+    }
+
+    return nbrHitTrees
   }
 }
