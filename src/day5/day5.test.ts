@@ -17,3 +17,7 @@ test('it calculates the seat id', () => {
 test('it calculates the highes seat id', () => {
   expect(day5.calculateHighestSeatId(__dirname + '/input.txt')).toBe(850)
 })
+
+test('it finds the missing seat id', () => {
+  expect(day5.findMissingSeatId(__dirname + '/input.txt')).toBe(599)
+})

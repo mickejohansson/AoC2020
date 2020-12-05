@@ -33,4 +33,22 @@ const calculateHighestSeatId = (path: string): number => {
     .reduce((acc, curr) => Math.max(acc, curr))
 }
 
-export default { binaryPartition, calculateSeatId, calculateHighestSeatId }
+const findMissingSeatId = (path: string): number => {
+  return fileReader
+    .readStringArray(path)
+    .map((input) => calculateSeatId(input))
+    .sort((a, b) => a - b)
+    .reduce((acc, curr, index, arr) => {
+      if (index > 0 && curr !== arr[index - 1] + 1) {
+        return curr - 1
+      }
+      return acc
+    }, undefined)
+}
+
+export default {
+  binaryPartition,
+  calculateSeatId,
+  calculateHighestSeatId,
+  findMissingSeatId
+}
