@@ -31,3 +31,7 @@ test('it parses a bag', () => {
     containedColors: ['posh gold']
   })
 })
+
+test('it finds the number of possible bags', () => {
+  expect(day7.nbrBags(__dirname + '/input.txt')).toBe(155)
+})
