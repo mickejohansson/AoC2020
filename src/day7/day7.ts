@@ -50,9 +50,8 @@ const nbrContainedBags = (
   containdedColors: { count: number; color: string }[],
   bags: Bag[]
 ): number => {
-  let childSum = 0
   if (containdedColors.length > 0) {
-    childSum = containdedColors.reduce((acc, curr) => {
+    return containdedColors.reduce((acc, curr) => {
       const currBag = bags.find((b) => b.color === curr.color)
       return (
         acc + curr.count * (nbrContainedBags(currBag.containedColors, bags) + 1)
@@ -60,7 +59,7 @@ const nbrContainedBags = (
     }, 0)
   }
 
-  return childSum
+  return 0
 }
 
 const nbrBagsInBag = (path: string): number => {
