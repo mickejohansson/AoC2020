@@ -46,4 +46,29 @@ const nbrBags = (path: string): number => {
     .length
 }
 
-export default { parseBag, nbrBags }
+const nbrContainedBags = (
+  containdedColors: { count: number; color: string }[],
+  bags: Bag[]
+): number => {
+  let childSum = 0
+  if (containdedColors.length > 0) {
+    childSum = containdedColors.reduce((acc, curr) => {
+      const currBag = bags.find((b) => b.color === curr.color)
+      return (
+        acc + curr.count * (nbrContainedBags(currBag.containedColors, bags) + 1)
+      )
+    }, 0)
+  }
+
+  return childSum
+}
+
+const nbrBagsInBag = (path: string): number => {
+  const bags = fileReader.readStringArray(path).map((line) => parseBag(line))
+  const shinyGoldBag = bags.find((b) => b.color === 'shiny gold')
+  const nbrContained = nbrContainedBags(shinyGoldBag.containedColors, bags)
+
+  return nbrContained
+}
+
+export default { parseBag, nbrBags, nbrBagsInBag }

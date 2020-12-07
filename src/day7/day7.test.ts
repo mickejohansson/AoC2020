@@ -32,3 +32,8 @@ test('it parses a bag', () => {
 test('it finds the number of possible bags', () => {
   expect(day7.nbrBags(__dirname + '/input.txt')).toBe(155)
 })
+
+test('it finds the number of contained bags', () => {
+  expect(day7.nbrBagsInBag(__dirname + '/testInput.txt')).toBe(126)
+  expect(day7.nbrBagsInBag(__dirname + '/input.txt')).toBe(54803)
+})
