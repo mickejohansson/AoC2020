@@ -2,18 +2,21 @@ import fileReader from '../util/fileReader'
 
 export interface Bag {
   color: string
-  containedColors: string[]
+  containedColors: { count: number; color: string }[]
 }
 
 const parseBag = (description: string): Bag => {
   const bagInfo = description.split(' bags contain ')
-  const containedColors = bagInfo[1].split(',').map((containedBag) =>
-    containedBag
-      .trim()
-      .split(' ')
-      .filter((word) => isNaN(parseInt(word)) && !word.startsWith('bag'))
-      .join(' ')
-  )
+  const containedColors = bagInfo[1]
+    .split(',')
+    .filter((c) => !c.startsWith('no other bag'))
+    .map((containedBagDescription) => {
+      const words = containedBagDescription.trim().split(' ')
+      return {
+        count: parseInt(words[0]),
+        color: words[1] + ' ' + words[2]
+      }
+    })
 
   const color = bagInfo[0]
 
@@ -21,13 +24,15 @@ const parseBag = (description: string): Bag => {
 }
 
 const canHold = (color: string, bag: Bag, bags: Bag[]): boolean => {
-  if (bag.containedColors.includes(color)) {
+  if (
+    bag.containedColors.find((containedColor) => containedColor.color === color)
+  ) {
     return true
   } else {
     return (
       bag.containedColors
-        .filter((c) => c !== 'no other')
-        .map((c) => bags.find((b) => b.color === c))
+        .filter((c) => c.color !== 'no other')
+        .map((c) => bags.find((b) => b.color === c.color))
         .map((b) => canHold(color, b, bags))
         .filter((canHold) => canHold === true).length > 0
     )

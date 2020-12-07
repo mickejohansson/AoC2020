@@ -7,7 +7,11 @@ test('it parses a bag', () => {
     )
   ).toMatchObject({
     color: 'dull indigo',
-    containedColors: ['posh plum', 'shiny coral', 'dull crimson']
+    containedColors: [
+      { count: 3, color: 'posh plum' },
+      { count: 5, color: 'shiny coral' },
+      { count: 5, color: 'dull crimson' }
+    ]
   })
 
   expect(
@@ -17,18 +21,11 @@ test('it parses a bag', () => {
   ).toMatchObject({
     color: 'clear black',
     containedColors: [
-      'striped plum',
-      'plaid violet',
-      'shiny chartreuse',
-      'bright tomato'
+      { count: 3, color: 'striped plum' },
+      { count: 3, color: 'plaid violet' },
+      { count: 3, color: 'shiny chartreuse' },
+      { count: 4, color: 'bright tomato' }
     ]
-  })
-
-  expect(
-    day7.parseBag('drab green bags contain 4 posh gold bags.')
-  ).toMatchObject({
-    color: 'drab green',
-    containedColors: ['posh gold']
   })
 })
 
