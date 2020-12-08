@@ -1,6 +1,11 @@
 import fileReader from '../util/fileReader'
 
-const run = (path: string): number => {
+interface Result {
+  success: boolean
+  acc: number
+}
+
+const run = (path: string): Result => {
   const lines = fileReader.readStringArray(path)
 
   let acc = 0
@@ -23,14 +28,18 @@ const run = (path: string): number => {
         nextLineNbr++
     }
 
-    if (visitedLines.includes(nextLineNbr) || nextLineNbr >= lines.length) {
-      return acc
+    if (visitedLines.includes(nextLineNbr)) {
+      return { success: false, acc }
+    }
+
+    if (nextLineNbr >= lines.length) {
+      return { success: true, acc }
     }
 
     visitedLines.push(nextLineNbr)
   }
 
-  return acc
+  return { success: false, acc }
 }
 
 export default { run }
