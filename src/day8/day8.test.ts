@@ -12,3 +12,8 @@ test('it runs code', () => {
     acc: 1949
   })
 })
+
+test('it figures out the fixed program', () => {
+  expect(day8.findFixedProgram(__dirname + '/testInput.txt')).toBe(8)
+  expect(day8.findFixedProgram(__dirname + '/input.txt')).toBe(2092)
+})

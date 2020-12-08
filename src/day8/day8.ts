@@ -51,8 +51,27 @@ const run = (lines: Line[]): Result => {
 }
 
 const findFixedProgram = (path: string): number => {
-  const lines = fileReader.readStringArray(path)
-  return 0
+  const lines = parse(path)
+
+  for (let i = 0; i < lines.length; i++) {
+    const originalOp = lines[i].op
+    if (lines[i].op === 'jmp') {
+      lines[i].op = 'nop'
+    } else if (lines[i].op === 'nop') {
+      lines[i].op = 'jmp'
+    } else {
+      continue
+    }
+
+    const result = run(lines)
+    if (result.success) {
+      return result.acc
+    }
+
+    lines[i].op = originalOp
+  }
+
+  return undefined
 }
 
-export default { parse, run }
+export default { parse, run, findFixedProgram }
