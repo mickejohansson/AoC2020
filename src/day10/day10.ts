@@ -11,7 +11,7 @@ const connectAdapters = (joltages: number[]): number[] => {
     )
 }
 
-let combinations: Map<number, number> = new Map()
+let cache: Map<number, number> = new Map()
 const combinationsFor = (
   joltage: number,
   joltages: number[],
@@ -21,7 +21,7 @@ const combinationsFor = (
     return 1
   }
 
-  const cached = combinations.get(joltage)
+  const cached = cache.get(joltage)
   if (cached !== undefined) {
     return cached
   }
@@ -31,18 +31,18 @@ const combinationsFor = (
     .map((j) => combinationsFor(j, joltages, last))
     .reduce((acc, curr) => acc + curr, 0)
 
-  combinations.set(joltage, c)
+  cache.set(joltage, c)
   return c
 }
 
 const getNbrCombinations = (joltages: number[]): number => {
   joltages.push(0)
   joltages = joltages.sort((a, b) => a - b)
-  combinations = new Map()
-  joltages.forEach((j, index, arr) =>
-    combinations.set(j, combinationsFor(j, arr, joltages[joltages.length - 1]))
+  cache = new Map()
+  joltages.forEach((j) =>
+    combinationsFor(j, joltages, joltages[joltages.length - 1])
   )
-  return combinations.get(0)
+  return cache.get(0)
 }
 
 export default { connectAdapters, getNbrCombinations }
