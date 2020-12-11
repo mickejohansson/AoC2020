@@ -23,18 +23,18 @@ test('it counts the number of occupied seats', () => {
 test('it plays one round on the map', () => {
   const map = day11.readMap(__dirname + '/testInput.txt')
   const map1Round = day11.readMap(__dirname + '/testInput1Round.txt')
-  const newMap = day11.doRound(map)
+  const newMap = day11.doRound(map, day11.simpleSeatUpdate)
   expect(newMap).toMatchObject(map1Round)
 })
 
 test('it finds the number of occupied seats in the stabilized test map', () => {
   const map = day11.readMap(__dirname + '/testInput.txt')
-  const newMap = day11.doRoundsUntilStabilized(map)
+  const newMap = day11.doRoundsUntilStabilized(map, day11.simpleSeatUpdate)
   expect(day11.nbrOccupiedSeats(newMap)).toBe(37)
 })
 
 test('it finds the number of occupied seats in the stabilized map', () => {
   const map = day11.readMap(__dirname + '/input.txt')
-  const newMap = day11.doRoundsUntilStabilized(map)
+  const newMap = day11.doRoundsUntilStabilized(map, day11.simpleSeatUpdate)
   expect(day11.nbrOccupiedSeats(newMap)).toBe(2316)
 })

@@ -51,22 +51,33 @@ const nbrOccupiedSeats = (map: string[][]): number => {
   return result
 }
 
-const doRound = (map: string[][]): string[][] => {
+const simpleSeatUpdate = (
+  map: string[][],
+  row: number,
+  col: number
+): string => {
+  const nbrOccupied = nbrOccupiedAdjacentSeats(row, col, map)
+  const current = map[row][col]
+  if (current === '.') {
+    return '.'
+  } else if (current === 'L' && nbrOccupied === 0) {
+    return '#'
+  } else if (current === '#' && nbrOccupied >= 4) {
+    return 'L'
+  } else {
+    return current
+  }
+}
+
+const doRound = (
+  map: string[][],
+  seatUpdate: (map: string[][], row: number, col: number) => string
+): string[][] => {
   const newMap: string[][] = []
   for (let row = 0; row < map.length; row++) {
     const newRow = []
     for (let col = 0; col < map[0].length; col++) {
-      const nbrOccupied = nbrOccupiedAdjacentSeats(row, col, map)
-      const current = map[row][col]
-      if (current === '.') {
-        newRow.push('.')
-      } else if (current === 'L' && nbrOccupied === 0) {
-        newRow.push('#')
-      } else if (current === '#' && nbrOccupied >= 4) {
-        newRow.push('L')
-      } else {
-        newRow.push(current)
-      }
+      newRow.push(seatUpdate(map, row, col))
     }
     newMap.push(newRow)
   }
@@ -74,10 +85,13 @@ const doRound = (map: string[][]): string[][] => {
   return newMap
 }
 
-const doRoundsUntilStabilized = (map: string[][]): string[][] => {
+const doRoundsUntilStabilized = (
+  map: string[][],
+  seatUpdate: (map: string[][], row: number, col: number) => string
+): string[][] => {
   let stabilized = false
   while (!stabilized) {
-    const newMap = doRound(map)
+    const newMap = doRound(map, seatUpdate)
     stabilized = isEqual(newMap, map)
     map = newMap
   }
@@ -90,5 +104,6 @@ export default {
   doRound,
   nbrOccupiedAdjacentSeats,
   nbrOccupiedSeats,
-  doRoundsUntilStabilized
+  doRoundsUntilStabilized,
+  simpleSeatUpdate
 }
