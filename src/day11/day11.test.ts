@@ -15,6 +15,11 @@ test('it finds the number occupied adjacent seats', () => {
   expect(day11.nbrOccupiedAdjacentSeats(0, 0, map)).toBe(1)
 })
 
+test('it finds the number seen adjacent seats', () => {
+  const map = day11.readMap(__dirname + '/testInputSeen.txt')
+  expect(day11.nbrOccupiedSeenFrom(4, 3, map)).toBe(8)
+})
+
 test('it counts the number of occupied seats', () => {
   const map = day11.readMap(__dirname + '/testInput3Rounds.txt')
   expect(day11.nbrOccupiedSeats(map)).toBe(51)
@@ -29,12 +34,18 @@ test('it plays one round on the map', () => {
 
 test('it finds the number of occupied seats in the stabilized test map', () => {
   const map = day11.readMap(__dirname + '/testInput.txt')
-  const newMap = day11.doRoundsUntilStabilized(map, day11.simpleSeatUpdate)
+  let newMap = day11.doRoundsUntilStabilized(map, day11.simpleSeatUpdate)
   expect(day11.nbrOccupiedSeats(newMap)).toBe(37)
+
+  newMap = day11.doRoundsUntilStabilized(map, day11.advancedSeatUpdate)
+  expect(day11.nbrOccupiedSeats(newMap)).toBe(26)
 })
 
 test('it finds the number of occupied seats in the stabilized map', () => {
   const map = day11.readMap(__dirname + '/input.txt')
-  const newMap = day11.doRoundsUntilStabilized(map, day11.simpleSeatUpdate)
+  let newMap = day11.doRoundsUntilStabilized(map, day11.simpleSeatUpdate)
   expect(day11.nbrOccupiedSeats(newMap)).toBe(2316)
+
+  newMap = day11.doRoundsUntilStabilized(map, day11.advancedSeatUpdate)
+  expect(day11.nbrOccupiedSeats(newMap)).toBe(2128)
 })

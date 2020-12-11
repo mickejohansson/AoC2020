@@ -69,6 +69,52 @@ const simpleSeatUpdate = (
   }
 }
 
+const nbrOccupiedSeenFrom = (
+  row: number,
+  col: number,
+  map: string[][]
+): number => {
+  let result = 0
+  for (let rowDirection = -1; rowDirection <= 1; rowDirection++) {
+    for (let colDirection = -1; colDirection <= 1; colDirection++) {
+      if (!(rowDirection === 0 && colDirection === 0)) {
+        let nextRow = row + rowDirection
+        let nextCol = col + colDirection
+        while (
+          nextRow >= 0 &&
+          nextRow < map.length &&
+          nextCol >= 0 &&
+          nextCol < map[0].length
+        ) {
+          if (map[nextRow][nextCol] === 'L') {
+            break
+          } else if (map[nextRow][nextCol] === '#') {
+            result++
+            break
+          }
+          nextRow += rowDirection
+          nextCol += colDirection
+        }
+      }
+    }
+  }
+  return result
+}
+
+const advancedSeatUpdate = (map: string[][], row: number, col: number) => {
+  const nbrOccupied = nbrOccupiedSeenFrom(row, col, map)
+  const current = map[row][col]
+  if (current === '.') {
+    return '.'
+  } else if (current === 'L' && nbrOccupied === 0) {
+    return '#'
+  } else if (current === '#' && nbrOccupied >= 5) {
+    return 'L'
+  } else {
+    return current
+  }
+}
+
 const doRound = (
   map: string[][],
   seatUpdate: (map: string[][], row: number, col: number) => string
@@ -104,6 +150,8 @@ export default {
   doRound,
   nbrOccupiedAdjacentSeats,
   nbrOccupiedSeats,
+  nbrOccupiedSeenFrom,
   doRoundsUntilStabilized,
-  simpleSeatUpdate
+  simpleSeatUpdate,
+  advancedSeatUpdate
 }
