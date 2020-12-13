@@ -27,4 +27,42 @@ const earliestDeparture = (path: string): Departure => {
   return departures[0]
 }
 
-export default { earliestDeparture }
+interface BusInfo {
+  busId: number
+  index: number
+}
+
+const earliestSpecialTimestamp = (input: string[]) => {
+  const buses: BusInfo[] = input
+    .map((s, i) => {
+      return {
+        busId: s === 'x' ? -1 : parseInt(s),
+        index: i
+      }
+    })
+    .filter((busInfo) => busInfo.busId >= 0)
+
+  let timestamp = 1
+  let step = 1
+  let i = 0
+  let success = false
+  while (true) {
+    //console.log('Testing: ' + i, buses[i])
+    if ((timestamp + buses[i].index) % buses[i].busId === 0) {
+      success = true
+      //console.log('------- Hit: ' + i, timestamp)
+      if (i === buses.length - 1) {
+        return timestamp
+      }
+
+      step = buses[i].busId
+      i++
+    } else {
+      //console.log('Failed: ' + i, timestamp)
+      timestamp += step
+      i = 0
+    }
+  }
+}
+
+export default { earliestDeparture, earliestSpecialTimestamp }
