@@ -22,10 +22,8 @@ test('it finds the nearest special timestamp', () => {
   expect(
     day13.earliestSpecialTimestamp(['7', '13', 'x', 'x', '59', 'x', '31', '19'])
   ).toBe(1068781)
-  /*
   const input = fileReader
     .readStringArray(__dirname + '/input.txt')[1]
     .split(',')
-  expect(day13.earliestSpecialTimestamp(input)).toBe(24)
-  */
+  expect(day13.earliestSpecialTimestamp(input)).toBe(226845233210288)
 })

@@ -32,6 +32,18 @@ interface BusInfo {
   index: number
 }
 
+const leastCommonMultiplier = (n1, n2) => {
+  const large = Math.max(n1, n2)
+  const small = Math.min(n1, n2)
+
+  let i = large
+  while (i % small !== 0) {
+    i += large
+  }
+
+  return i
+}
+
 const earliestSpecialTimestamp = (input: string[]) => {
   const buses: BusInfo[] = input
     .map((s, i) => {
@@ -42,25 +54,18 @@ const earliestSpecialTimestamp = (input: string[]) => {
     })
     .filter((busInfo) => busInfo.busId >= 0)
 
-  let timestamp = 1
-  let step = 1
-  let i = 0
-  let success = false
+  let timestamp = 0
+  let step = buses[0].busId
+  let i = 2
   while (true) {
-    //console.log('Testing: ' + i, buses[i])
-    if ((timestamp + buses[i].index) % buses[i].busId === 0) {
-      success = true
-      //console.log('------- Hit: ' + i, timestamp)
-      if (i === buses.length - 1) {
+    if (buses.slice(0, i).every((b) => (timestamp + b.index) % b.busId === 0)) {
+      if (i === buses.length) {
         return timestamp
       }
-
-      step = buses[i].busId
+      step = leastCommonMultiplier(buses[i - 1].busId, step)
       i++
     } else {
-      //console.log('Failed: ' + i, timestamp)
       timestamp += step
-      i = 0
     }
   }
 }
