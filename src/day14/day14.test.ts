@@ -18,8 +18,14 @@ test('it runs the program', () => {
   expect(
     day14.runProgram(fileReader.readStringArray(__dirname + '/input.txt'))
   ).toBe(12610010960049)
+
+  expect(
+    day14.runProgramV2(fileReader.readStringArray(__dirname + '/input.txt'))
+  ).toBe(3608464522781)
 })
 
 test('it applies the mask to addresses', () => {
-  expect(day14.masked('000000000000000000000000000000X1001X', 42)).toBe(73)
+  expect(
+    day14.maskedAddresses('000000000000000000000000000000X1001X', 42)
+  ).toMatchObject([26, 27, 58, 59])
 })
