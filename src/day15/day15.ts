@@ -1,29 +1,25 @@
-interface Round {
-  nbr: number
-  index: number
+interface Match {
+  turn: number
+  distance: number
 }
 
-const play = (startingNumbers: number[], nbrRounds: number): number => {
-  const rounds: Round[] = startingNumbers.map((n, i) => {
-    return { nbr: n, index: i + 1 }
-  })
+const play = (start: number[], nbrTurns: number): number => {
+  const matches: Map<number, Match> = new Map()
 
-  for (let i = rounds.length; i < nbrRounds; i++) {
-    const last = rounds[i - 1]
-    const matching = rounds.filter((r) => r.nbr === last.nbr)
-    if (matching.length <= 1) {
-      rounds.push({ nbr: 0, index: i + 1 })
-    } else {
-      rounds.push({
-        nbr:
-          matching[matching.length - 1].index -
-          matching[matching.length - 2].index,
-        index: i + 1
-      })
-    }
+  start.forEach((n, i) => matches.set(n, { turn: i + 1, distance: 0 }))
+
+  let last = start[start.length - 1]
+  for (let turn = start.length + 1; turn <= nbrTurns; turn++) {
+    let next = matches.get(last).distance
+
+    const prevOccurence = matches.get(next)
+    const distance = prevOccurence ? turn - prevOccurence.turn : 0
+    matches.set(next, { turn, distance })
+
+    last = next
   }
 
-  return rounds[rounds.length - 1].nbr
+  return last
 }
 
 export default { play }
