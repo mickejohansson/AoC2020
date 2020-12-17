@@ -33,8 +33,27 @@ const parseNotes = (path: string): Note => {
   return note
 }
 
+const matchesAnyRule = (nbr: number, rules: Rule[]) => {
+  for (let i = 0; i < rules.length; i++) {
+    for (let j = 0; j < rules[i].ranges.length; j++) {
+      if (nbr >= rules[i].ranges[j][0] && nbr <= rules[i].ranges[j][1]) {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
 const errorRate = (note: Note): number => {
-  return undefined
+  return note.nearbyTickets
+    .flatMap((ticket) =>
+      ticket.map((nbr) => {
+        return { matches: matchesAnyRule(nbr, note.rules), number: nbr }
+      })
+    )
+    .filter((m) => m.matches === false)
+    .reduce((acc, curr) => acc + curr.number, 0)
 }
 
 export default { parseNotes, errorRate }
