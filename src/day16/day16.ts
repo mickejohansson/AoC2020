@@ -23,6 +23,12 @@ const parseNotes = (path: string): Note => {
   })
   note.rules = rules
 
+  const myTicket = sections[1]
+    .split(':')[1]
+    .split(',')
+    .map((s) => parseInt(s))
+  note.myTicket = myTicket
+
   const nearbyTickets = sections[2]
     .split(':')[1]
     .trim()
@@ -82,9 +88,40 @@ const departureSum = (note: Note): number => {
     }
   }
 
-  console.log('Possible', possibleMatches)
+  const matches: Map<string, number> = new Map()
 
-  return undefined
+  let posMatches = possibleMatches.map((p, i) => {
+    return { pos: i, ruleNames: p.map((rule) => rule.name) }
+  })
+
+  let i = 0
+  while (posMatches.length > 0) {
+    posMatches
+      .filter((p) => p.ruleNames.length === 1)
+      .forEach((p) => matches.set(p.ruleNames[0], p.pos))
+
+    posMatches = posMatches.filter((p) => p.ruleNames.length > 1)
+    posMatches = posMatches.map((p) => {
+      return {
+        pos: p.pos,
+        ruleNames: p.ruleNames.filter((m) => !matches.has(m))
+      }
+    })
+
+    i++
+  }
+
+  const lookup = Array.from(matches)
+  const myTicket = note.myTicket.map((nbr, index) => {
+    return {
+      ruleName: lookup.find((l) => l[1] === index)[0],
+      value: nbr
+    }
+  })
+
+  return myTicket
+    .filter((m) => m.ruleName.startsWith('departure'))
+    .reduce((acc, curr) => acc * curr.value, 1)
 }
 
 export default { parseNotes, errorRate, departureSum }
