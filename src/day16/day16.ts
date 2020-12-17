@@ -33,27 +33,58 @@ const parseNotes = (path: string): Note => {
   return note
 }
 
-const matchesAnyRule = (nbr: number, rules: Rule[]) => {
+const matchingRules = (nbr: number, rules: Rule[]): Rule[] => {
+  const matching: Rule[] = []
   for (let i = 0; i < rules.length; i++) {
     for (let j = 0; j < rules[i].ranges.length; j++) {
       if (nbr >= rules[i].ranges[j][0] && nbr <= rules[i].ranges[j][1]) {
-        return true
+        matching.push(rules[i])
       }
     }
   }
 
-  return false
+  return matching
 }
 
 const errorRate = (note: Note): number => {
   return note.nearbyTickets
     .flatMap((ticket) =>
       ticket.map((nbr) => {
-        return { matches: matchesAnyRule(nbr, note.rules), number: nbr }
+        return {
+          matches: matchingRules(nbr, note.rules).length > 0,
+          number: nbr
+        }
       })
     )
     .filter((m) => m.matches === false)
     .reduce((acc, curr) => acc + curr.number, 0)
 }
 
-export default { parseNotes, errorRate }
+const departureSum = (note: Note): number => {
+  const validTickets: number[][] = note.nearbyTickets
+    .map((ticket) => {
+      return {
+        isValid: ticket.every((n) => matchingRules(n, note.rules).length > 0),
+        ticket
+      }
+    })
+    .filter((m) => m.isValid)
+    .map((m) => m.ticket)
+
+  const possibleMatches: Rule[][] = []
+  for (let i = 0; i < validTickets[0].length; i++) {
+    possibleMatches[i] = note.rules
+    for (let j = 0; j < validTickets.length; j++) {
+      const m = matchingRules(validTickets[j][i], note.rules)
+      possibleMatches[i] = possibleMatches[i].filter((possible) =>
+        m.find((x) => x.name === possible.name)
+      )
+    }
+  }
+
+  console.log('Possible', possibleMatches)
+
+  return undefined
+}
+
+export default { parseNotes, errorRate, departureSum }
