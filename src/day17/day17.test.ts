@@ -17,3 +17,19 @@ test('it parses the input', () => {
   expect(map.get(day17.hash(2, 1, 1)).active).toBe(false)
   expect(map.get(day17.hash(2, 1, 1)).activeNeighbours).toBe(4)
 })
+
+test('it runs 2 cycles on the test input', () => {
+  let map = day17.parse(__dirname + '/testInput.txt')
+  map = day17.runCycle(map)
+  expect(day17.nbrActive(map)).toBe(11)
+  map = day17.runCycle(map)
+  expect(day17.nbrActive(map)).toBe(21)
+})
+
+test('it runs 6 cycles on the real input', () => {
+  let map = day17.parse(__dirname + '/input.txt')
+  for (let i = 0; i < 6; i++) {
+    map = day17.runCycle(map)
+  }
+  expect(day17.nbrActive(map)).toBe(353)
+})

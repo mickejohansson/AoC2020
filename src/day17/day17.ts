@@ -98,15 +98,40 @@ const parse = (path: string): Map<string, Cube> => {
     })
   )
 
-  console.log('Map', map)
+  //console.log('Map', map)
   return map
 }
 
-const runCycle = (map: Map<string, boolean>) => {
-  const newMap: Map<string, boolean> = new Map()
-  map.forEach((isActive, hash) => {
-    const coordinates = hash.split(':')
+const nbrActive = (map: Map<string, Cube>): number => {
+  let sum = 0
+  map.forEach((cube) => {
+    if (cube.active) {
+      sum++
+    }
   })
+
+  return sum
 }
 
-export default { parse, hash }
+const runCycle = (map: Map<string, Cube>): Map<string, Cube> => {
+  const newMap: Map<string, Cube> = new Map()
+  map.forEach((cube, key) => {
+    if (cube.active) {
+      if (cube.activeNeighbours === 2 || cube.activeNeighbours === 3) {
+        update(cube.x, cube.y, cube.z, true, newMap)
+      } else {
+        update(cube.x, cube.y, cube.z, false, newMap)
+      }
+    } else {
+      if (cube.activeNeighbours === 3) {
+        update(cube.x, cube.y, cube.z, true, newMap)
+      } else {
+        // Remain inactive
+      }
+    }
+  })
+
+  return newMap
+}
+
+export default { parse, hash, runCycle, nbrActive }
