@@ -45,4 +45,38 @@ const evaluate = (expression: string): number => {
   return result
 }
 
-export default { evaluate }
+// Evaluate expressions such as ((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2
+const evaluateAdvanced = (expression: string): number => {
+  expression = '(' + expression + ')'
+  let i = 0
+  while (expression.split(' ').length > 1) {
+    // First solve any additions: ((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2 =>
+    //                            ((6 * 9) * (15 * 14) + 6) + 6 * 2
+    expression = expression.replace(/(\d+) \+ (\d+)/g, (substring, a, b) => {
+      return (parseInt(a) + parseInt(b)).toString()
+    })
+
+    // Solve any parantheses containing just multiplication:
+    //  ((6 * 9) * (15 * 14) + 6) + 6 * 2  =>
+    //  ((54) * (210) + 6) + 6 * 2
+    expression = expression.replace(
+      /\((\d+(?: [\*] \d+)+)\)/g,
+      (substring, exp) => {
+        return exp
+          .split('*')
+          .map((s) => parseInt(s))
+          .reduce((acc, curr) => acc * curr)
+      }
+    )
+
+    // Remove any unnecessary parantheses
+    // ((54) * (210) + 6) + 6 * 2 =>
+    // (54 * 210 + 6) + 6 * 2
+    expression = expression.replace(/\((\d+)\)/, (substring, a) => a)
+    i++
+  }
+
+  return parseInt(expression)
+}
+
+export default { evaluate, evaluateAdvanced }
