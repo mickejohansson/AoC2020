@@ -44,3 +44,14 @@ test('it finds the number of matching messages in the second set of test data us
     .forEach((r) => rules.set(parseInt(r[0]), r[1]))
   expect(day19.nbrMatching(rules, input[1], true)).toBe(12)
 })
+
+test('it finds the number of matching messages in the real data using recursive rules', () => {
+  const input = fileReader
+    .readStringArray(__dirname + '/input.txt', '\n\n')
+    .map((chunk) => chunk.split('\n'))
+  const rules: Map<number, string> = new Map()
+  input[0]
+    .map((r) => r.split(': '))
+    .forEach((r) => rules.set(parseInt(r[0]), r[1]))
+  expect(day19.nbrMatching(rules, input[1], true)).toBe(329)
+})

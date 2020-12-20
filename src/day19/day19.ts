@@ -7,11 +7,6 @@ const ruleRegex = (
   if (rule.includes('|')) {
     prefix += '('
   }
-  if (rule.includes('R8')) {
-    prefix += '?<R8>'
-  } else if (rule.includes('R11')) {
-    prefix += '?<R11>'
-  }
   return (
     prefix +
     rule
@@ -21,12 +16,6 @@ const ruleRegex = (
           .split(' ')
           .map((rulePart) => {
             let r = undefined
-            if (rulePart === 'R8') {
-              return '\\k<R8>'
-            }
-            if (rulePart === 'R11') {
-              return '\\k<R11>'
-            }
             if (rulePart.startsWith('"')) {
               r = rulePart.charAt(1)
             } else {
@@ -53,13 +42,17 @@ const nbrMatching = (
   useRecursiveRules: boolean = false
 ): number => {
   if (useRecursiveRules) {
-    rules.set(8, '42 | 42 R8')
-    rules.set(11, '42 31 | 42 R11 31')
+    rules.set(
+      8,
+      '42 | 42 42 | 42 42 42 | 42 42 42 42 | 42 42 42 42 42 | 42 42 42 42 42 | 42 42 42 42 42 42 | 42 42 42 42 42 42 42 | 42 42 42 42 42 42 42 42'
+    )
+    rules.set(
+      11,
+      '42 31 | 42 42 31 31 | 42 42 42 31 31 31 | 42 42 42 42 31 31 31 31 | 42 42 42 42 42 31 31 31 31 31'
+    )
   }
-  console.log('rules', rules)
   const cache: Map<number, string> = new Map()
   const regex = ruleRegex(rules.get(0), rules, cache)
-  console.log('regex', regex)
   return messages
     .map((message) => message.match('^' + regex + '$'))
     .reduce((acc, curr) => acc + (curr ? 1 : 0), 0)
