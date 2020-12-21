@@ -1,5 +1,12 @@
 import fileReader from '../util/fileReader'
 
+enum Direction {
+  UP,
+  RIGHT,
+  DOWN,
+  LEFT
+}
+
 interface Tile {
   id: number
   data: string[][]
@@ -11,8 +18,8 @@ const toBinary = (bin: string[]): number => {
 }
 
 interface Edges {
-  normal: number[]
-  reversed: number[]
+  normal: Map<Direction, number>
+  reversed: Map<Direction, number>
 }
 
 const getEdges = (tileData: string[][]): Edges => {
@@ -25,32 +32,51 @@ const getEdges = (tileData: string[][]): Edges => {
   const left = bin.map((row) => row[0])
   const right = bin.map((row) => row[row.length - 1])
 
-  const normal: number[] = []
-  normal.push(toBinary(top))
-  normal.push(toBinary(bottom))
-  normal.push(toBinary(left))
-  normal.push(toBinary(right))
+  const normal: Map<Direction, number> = new Map()
+  normal.set(Direction.UP, toBinary(top))
+  normal.set(Direction.DOWN, toBinary(bottom))
+  normal.set(Direction.LEFT, toBinary(left))
+  normal.set(Direction.RIGHT, toBinary(right))
 
-  const reversed: number[] = []
-  reversed.push(toBinary(top.reverse()))
-  reversed.push(toBinary(bottom.reverse()))
-  reversed.push(toBinary(left.reverse()))
-  reversed.push(toBinary(right.reverse()))
+  const reversed: Map<Direction, number> = new Map()
+  reversed.set(Direction.UP, toBinary(top.reverse()))
+  reversed.set(Direction.DOWN, toBinary(bottom.reverse()))
+  reversed.set(Direction.LEFT, toBinary(left.reverse()))
+  reversed.set(Direction.RIGHT, toBinary(right.reverse()))
 
   return { normal, reversed }
 }
 
 const hasMatchingEdge = (tile1: Tile, tile2: Tile): boolean => {
-  const tile1Edges = tile1.edges.normal.concat(tile1.edges.reversed)
+  const tile1Edges = Array.from(tile1.edges.normal.values()).concat(
+    Array.from(tile1.edges.reversed.values())
+  )
+  const tile2Edges = Array.from(tile2.edges.normal.values())
   for (let i = 0; i < tile1Edges.length; i++) {
-    for (let j = 0; j < tile2.edges.normal.length; j++) {
-      if ((tile1Edges[i] ^ tile2.edges.normal[j]) === 0) {
+    for (let j = 0; j < tile2Edges.length; j++) {
+      if ((tile1Edges[i] ^ tile2Edges[j]) === 0) {
         return true
       }
     }
   }
 
   return false
+}
+
+const parseTiles = (path: string): Tile[] => {
+  return fileReader
+    .readStringArray(path, '\n\n')
+    .map((chunk) => chunk.split('\n'))
+    .map((tileInfo) => {
+      const id = parseInt(tileInfo[0].match(/Tile (\d+):/)[1])
+      const data = tileInfo.slice(1).map((row) => row.split(''))
+      const edges = getEdges(data)
+      return {
+        id,
+        data,
+        edges
+      }
+    })
 }
 
 const cornerProduct = (path: string): number => {
@@ -89,4 +115,13 @@ const cornerProduct = (path: string): number => {
   return cornerTiles.reduce((acc, curr) => acc * curr.id, 1)
 }
 
-export default { cornerProduct }
+const arrangeTiles = (path: string): Tile[][] => {
+  const tiles = parseTiles(path)
+  console.log('tiles', tiles)
+
+  const startTile = tiles[0]
+  //const leftTile = findMatchingTile(startTile)
+  return undefined
+}
+
+export default { cornerProduct, arrangeTiles }
