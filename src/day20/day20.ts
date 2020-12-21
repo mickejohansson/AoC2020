@@ -4,25 +4,24 @@ enum Direction {
   UP,
   RIGHT,
   DOWN,
-  LEFT
+  LEFT,
+  UP_REVERSED,
+  RIGHT_REVERSED,
+  DOWN_REVERSED,
+  LEFT_REVERSED
 }
 
 interface Tile {
   id: number
   data: string[][]
-  edges: Edges
+  edges: Map<Direction, number>
 }
 
 const toBinary = (bin: string[]): number => {
   return parseInt(bin.join(''), 2)
 }
 
-interface Edges {
-  normal: Map<Direction, number>
-  reversed: Map<Direction, number>
-}
-
-const getEdges = (tileData: string[][]): Edges => {
+const getEdges = (tileData: string[][]): Map<Direction, number> => {
   const bin: string[][] = tileData.map((row) =>
     row.map((c) => (c === '#' ? '1' : '0'))
   )
@@ -32,26 +31,22 @@ const getEdges = (tileData: string[][]): Edges => {
   const left = bin.map((row) => row[0])
   const right = bin.map((row) => row[row.length - 1])
 
-  const normal: Map<Direction, number> = new Map()
-  normal.set(Direction.UP, toBinary(top))
-  normal.set(Direction.DOWN, toBinary(bottom))
-  normal.set(Direction.LEFT, toBinary(left))
-  normal.set(Direction.RIGHT, toBinary(right))
+  const edges: Map<Direction, number> = new Map()
+  edges.set(Direction.UP, toBinary(top))
+  edges.set(Direction.RIGHT, toBinary(right))
+  edges.set(Direction.DOWN, toBinary(bottom))
+  edges.set(Direction.LEFT, toBinary(left))
+  edges.set(Direction.UP_REVERSED, toBinary(top.reverse()))
+  edges.set(Direction.RIGHT_REVERSED, toBinary(right.reverse()))
+  edges.set(Direction.DOWN_REVERSED, toBinary(bottom.reverse()))
+  edges.set(Direction.LEFT_REVERSED, toBinary(left.reverse()))
 
-  const reversed: Map<Direction, number> = new Map()
-  reversed.set(Direction.UP, toBinary(top.reverse()))
-  reversed.set(Direction.DOWN, toBinary(bottom.reverse()))
-  reversed.set(Direction.LEFT, toBinary(left.reverse()))
-  reversed.set(Direction.RIGHT, toBinary(right.reverse()))
-
-  return { normal, reversed }
+  return edges
 }
 
 const hasMatchingEdge = (tile1: Tile, tile2: Tile): boolean => {
-  const tile1Edges = Array.from(tile1.edges.normal.values()).concat(
-    Array.from(tile1.edges.reversed.values())
-  )
-  const tile2Edges = Array.from(tile2.edges.normal.values())
+  const tile1Edges = Array.from(tile1.edges.values())
+  const tile2Edges = Array.from(tile2.edges.values())
   for (let i = 0; i < tile1Edges.length; i++) {
     for (let j = 0; j < tile2Edges.length; j++) {
       if ((tile1Edges[i] ^ tile2Edges[j]) === 0) {
@@ -115,11 +110,31 @@ const cornerProduct = (path: string): number => {
   return cornerTiles.reduce((acc, curr) => acc * curr.id, 1)
 }
 
+const findTile = (tile: Tile, tileDirection: Direction, tiles: Tile[]) => {
+  for (let t=0; t<tiles.length; t++) {
+    const currentTile = tiles[t]
+    const currentTileEdges = Array.from(currentTile.edges.entries())
+    if (currentTile.id !== tile.id) {
+      for (let e=0; e<currentTileEdges.length; e++) {
+        const currentEdge = currentTileEdges[e][1]
+        if ((currentEdge ^ tile.edges.get(tileDirection)) === 0) {
+          return currentTile
+        }
+      }
+    }
+  }
+
+  return undefined
+}
+
 const arrangeTiles = (path: string): Tile[][] => {
   const tiles = parseTiles(path)
   console.log('tiles', tiles)
 
   const startTile = tiles[0]
+  const leftTile = findTile(startTile, Direction.LEFT, tiles)
+  console.log('Matching tiles: ', startTile.id, leftTile.id)
+  const mapWidth = Math.sqrt(tiles.length)
   //const leftTile = findMatchingTile(startTile)
   return undefined
 }
