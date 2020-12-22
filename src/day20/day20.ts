@@ -233,12 +233,34 @@ const findMatchingTile = (tile: Tile, side: Side, tiles: Tile[]): Tile => {
   }
 }
 
+const findNeighbours = (tile: Tile, tiles: Tile[]): Tile[] => {
+  return [
+    findMatchingTile(tile, Side.TOP, tiles),
+    findMatchingTile(tile, Side.RIGHT, tiles),
+    findMatchingTile(tile, Side.BOTTOM, tiles),
+    findMatchingTile(tile, Side.LEFT, tiles)
+  ]
+}
+
 const buildMap = (path: string): Tile[][] => {
   const tiles = parseTiles(path)
+
+  const mappedTiles: Map<number, number[]> = new Map()
   const startTile = tiles[0]
+  console.log('startTile', startTile.id)
+  const neighbours = findNeighbours(startTile, tiles)
+  console.log(
+    'start neighbours: ',
+    neighbours.map((t) => (t ? t.id : undefined))
+  )
+  //  while (mappedTiles.size < tiles.length) {
+
+  // }
+  /*
   console.log('startTile', startTile.id)
   const foundTile = findMatchingTile(tiles[0], Side.LEFT, tiles)
   console.log('foundTile', foundTile.id)
+  */
   return []
 }
 
