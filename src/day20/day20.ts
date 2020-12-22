@@ -208,20 +208,26 @@ const flip = (tile: Tile) => {
   tile.borders = borders
 }
 
+const testTile = (tile: Tile, side: Side, currentTile: Tile): Tile => {
+  for (let b = 0; b < currentTile.borders.length; b++) {
+    if (currentTile.borders[(side + 2) % 4] === tile.borders[side]) {
+      return currentTile
+    }
+    rotateCW(currentTile)
+  }
+}
+
 const findMatchingTile = (tile: Tile, side: Side, tiles: Tile[]): Tile => {
-  console.log('Finding matching for ' + tile.id, tile.borders)
   for (let i = 0; i < tiles.length; i++) {
     const currentTile = tiles[i]
     if (currentTile.id !== tile.id) {
-      flip(currentTile)
-      console.log('Find matching ' + currentTile.id, currentTile.borders)
-      for (let b = 0; b < currentTile.borders.length; b++) {
-        console.log('Testing ' + currentTile.id + ': ', currentTile.borders)
-        if (currentTile.borders[(side + 2) % 4] === tile.borders[side]) {
-          console.log('Found match for ' + tile.id + ': ' + currentTile.id)
-          return currentTile
-        }
-        rotateCW(currentTile)
+      let foundTile = testTile(tile, side, currentTile)
+      if (!foundTile) {
+        flip(currentTile)
+        foundTile = testTile(tile, side, currentTile)
+      }
+      if (foundTile) {
+        return foundTile
       }
     }
   }
@@ -229,7 +235,10 @@ const findMatchingTile = (tile: Tile, side: Side, tiles: Tile[]): Tile => {
 
 const buildMap = (path: string): Tile[][] => {
   const tiles = parseTiles(path)
-  findMatchingTile(tiles[0], Side.LEFT, tiles)
+  const startTile = tiles[0]
+  console.log('startTile', startTile.id)
+  const foundTile = findMatchingTile(tiles[0], Side.LEFT, tiles)
+  console.log('foundTile', foundTile.id)
   return []
 }
 

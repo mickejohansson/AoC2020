@@ -112,8 +112,6 @@ test('it finds a matching tile', () => {
   ).toBe(3333)
 })
 
-/*
 test('it builds the map', () => {
   expect(day20.buildMap(__dirname + '/testInput.txt').length).toBe(3)
 })
-*/
