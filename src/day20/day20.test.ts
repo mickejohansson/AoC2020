@@ -1,15 +1,5 @@
 import day20, { Tile, Side } from './day20'
 
-/*
-test('it arranges the tiles and calculates the product of the corner ids', () => {
-  expect(day20.cornerProduct(__dirname + '/testInput.txt')).toBe(20899048083289)
-  expect(day20.cornerProduct(__dirname + '/input.txt')).toBe(28057939502729)
-})
-
-test('it arranges the tiles', () => {
-  expect(day20.arrangeTiles(__dirname + '/testInput.txt')).toMatchObject([])
-})
-*/
 test('it parses tiles', () => {
   const testTile: Tile = {
     borders: [210, 89, 924, 318],
@@ -110,6 +100,11 @@ test('it finds a matching tile', () => {
   expect(
     day20.findMatchingTile(testTile, Side.LEFT, [matchingTestTile]).id
   ).toBe(3333)
+})
+
+test('it arranges the tiles and calculates the product of the corner ids', () => {
+  expect(day20.cornerProduct(__dirname + '/testInput.txt')).toBe(20899048083289)
+  expect(day20.cornerProduct(__dirname + '/input.txt')).toBe(28057939502729)
 })
 
 test('it builds the map', () => {
