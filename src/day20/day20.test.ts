@@ -13,7 +13,7 @@ test('it arranges the tiles', () => {
 test('it parses tiles', () => {
   const tiles = day20.parseTiles(__dirname + '/testInput.txt')
   const tile: Tile = {
-    borders: [210, 231, 498, 89],
+    borders: [210, 89, 924, 318],
     data: [
       ['.', '.', '#', '#', '.', '#', '.', '.', '#', '.'],
       ['#', '#', '.', '.', '#', '.', '.', '.', '.', '.'],

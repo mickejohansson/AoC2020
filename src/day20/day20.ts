@@ -165,9 +165,14 @@ const getBorders = (tileData: string[][]): number[] => {
 
   return [
     fromBinary(bin[0]), // TOP
-    fromBinary(bin[bin.length - 1]), // RIGHT
-    fromBinary(bin.map((row) => row[0])), // BOTTOM
-    fromBinary(bin.map((row) => row[row.length - 1])) // LEFT
+    fromBinary(bin.map((row) => row[row.length - 1])), // RIGHT
+    fromBinary(bin[bin.length - 1].map((c) => c).reverse()), // BOTTOM
+    fromBinary(
+      bin
+        .map((row) => row[0])
+        .map((c) => c)
+        .reverse()
+    ) // LEFT
   ]
 }
 
@@ -208,4 +213,4 @@ const buildMap = (path: string): Tile[][] => {
   return undefined
 }
 
-export default { parseTiles, buildMap, rotateCW, getBorders }
+export default { parseTiles, buildMap, rotateCW }
