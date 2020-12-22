@@ -1,4 +1,5 @@
 import fileReader from '../util/fileReader'
+import { close } from 'fs'
 
 /*
 enum Direction {
@@ -219,7 +220,11 @@ const testTile = (tile: Tile, side: Side, currentTile: Tile): Tile => {
 
 const findMatchingTile = (tile: Tile, side: Side, tiles: Tile[]): Tile => {
   for (let i = 0; i < tiles.length; i++) {
-    const currentTile = tiles[i]
+    const currentTile = {
+      id: tiles[i].id,
+      data: Array.from(tiles[i].data.map((row) => Array.from(row))),
+      borders: Array.from(tiles[i].borders)
+    }
     if (currentTile.id !== tile.id) {
       let foundTile = testTile(tile, side, currentTile)
       if (!foundTile) {
@@ -245,14 +250,78 @@ const findNeighbours = (tile: Tile, tiles: Tile[]): Tile[] => {
 const buildMap = (path: string): Tile[][] => {
   const tiles = parseTiles(path)
 
-  const mappedTiles: Map<number, number[]> = new Map()
+  let startTile = tiles[5]
+  console.log('startTile', startTile.id)
+  let leftTile = startTile
+  while (leftTile) {
+    leftTile = findMatchingTile(leftTile, Side.LEFT, tiles)
+    if (leftTile) {
+      //console.log('leftTile', leftTile.id)
+      startTile = leftTile
+    }
+  }
+  let upTile = startTile
+  while (upTile) {
+    upTile = findMatchingTile(upTile, Side.TOP, tiles)
+    if (upTile) {
+      //console.log('upTile', upTile.id)
+      startTile = upTile
+    }
+  }
+  console.log('startTile', startTile.id)
+  let rightTile = startTile
+  let row = []
+  while (rightTile) {
+    row.push(rightTile)
+    rightTile = findMatchingTile(rightTile, Side.RIGHT, tiles)
+  }
+  console.log(
+    'row',
+    row.map((t) => (t ? t.id : undefined))
+  )
+
+  console.log('startTile', startTile.id)
+  rightTile = findMatchingTile(startTile, Side.BOTTOM, tiles)
+  row = []
+  while (rightTile) {
+    row.push(rightTile)
+    rightTile = findMatchingTile(rightTile, Side.LEFT, tiles)
+  }
+  console.log(
+    'row',
+    row.map((t) => (t ? t.id : undefined))
+  )
+
+  /*
+  let rightTile = startTile
+  let downTile = startTile
+  let col = []
+  while (downTile) {
+    const row = []
+    while (rightTile) {
+      row.push(upTile)
+      rightTile = findMatchingTile(rightTile, Side.RIGHT, tiles)
+      console.log('rightTile', rightTile ? rightTile.id : undefined)
+    }
+    col.push(row)
+    downTile = findMatchingTile(downTile, Side.BOTTOM, tiles)
+    rightTile = downTile
+  }
+
+  console.log('col', col)
+  */
+  /*
+  const mappedTiles: Tile[] = []
   const startTile = tiles[0]
   console.log('startTile', startTile.id)
-  const neighbours = findNeighbours(startTile, tiles)
-  console.log(
-    'start neighbours: ',
-    neighbours.map((t) => (t ? t.id : undefined))
-  )
+  for (let i = 0; i < tiles.length; i++) {
+    const neighbours = findNeighbours(tiles[i], tiles)
+    console.log(
+      tiles[i].id + ' neighbours: ',
+      neighbours.map((t) => (t ? t.id : undefined))
+    )
+  }
+  */
   //  while (mappedTiles.size < tiles.length) {
 
   // }
