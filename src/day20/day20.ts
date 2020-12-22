@@ -141,7 +141,7 @@ const arrangeTiles = (path: string): Tile[][] => {
 }
 */
 
-enum Side {
+export enum Side {
   TOP = 0,
   RIGHT,
   BOTTOM,
@@ -208,9 +208,29 @@ const flip = (tile: Tile) => {
   tile.borders = borders
 }
 
-const buildMap = (path: string): Tile[][] => {
-  const tiles = parseTiles(path)
-  return undefined
+const findMatchingTile = (tile: Tile, side: Side, tiles: Tile[]): Tile => {
+  console.log('Finding matching for ' + tile.id, tile.borders)
+  for (let i = 0; i < tiles.length; i++) {
+    const currentTile = tiles[i]
+    if (currentTile.id !== tile.id) {
+      flip(currentTile)
+      console.log('Find matching ' + currentTile.id, currentTile.borders)
+      for (let b = 0; b < currentTile.borders.length; b++) {
+        console.log('Testing ' + currentTile.id + ': ', currentTile.borders)
+        if (currentTile.borders[(side + 2) % 4] === tile.borders[side]) {
+          console.log('Found match for ' + tile.id + ': ' + currentTile.id)
+          return currentTile
+        }
+        rotateCW(currentTile)
+      }
+    }
+  }
 }
 
-export default { parseTiles, buildMap, rotateCW, flip }
+const buildMap = (path: string): Tile[][] => {
+  const tiles = parseTiles(path)
+  findMatchingTile(tiles[0], Side.LEFT, tiles)
+  return []
+}
+
+export default { parseTiles, buildMap, rotateCW, flip, findMatchingTile }
