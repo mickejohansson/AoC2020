@@ -1,5 +1,6 @@
 import fileReader from '../util/fileReader'
 
+/*
 enum Direction {
   UP,
   RIGHT,
@@ -138,5 +139,73 @@ const arrangeTiles = (path: string): Tile[][] => {
   //const leftTile = findMatchingTile(startTile)
   return undefined
 }
+*/
 
-export default { cornerProduct, arrangeTiles }
+enum Side {
+  TOP = 0,
+  RIGHT,
+  BOTTOM,
+  LEFT 
+}
+
+export interface Tile {
+  id: number
+  data: string[][]
+  borders: number[]
+}
+
+const fromBinary = (bin: string[]): number => {
+  return parseInt(bin.join(''), 2)
+}
+
+const getBorders = (tileData: string[][]): number[] => {
+  const bin: string[][] = tileData.map((row) =>
+    row.map((c) => (c === '#' ? '1' : '0'))
+  )
+
+  return [
+    fromBinary(bin[0]), // TOP
+    fromBinary(bin[bin.length - 1]), // RIGHT
+    fromBinary(bin.map((row) => row[0])), // BOTTOM
+    fromBinary(bin.map((row) => row[row.length - 1])) // LEFT
+  ]
+}
+
+const parseTiles = (path: string): Tile[] => {
+  return fileReader
+    .readStringArray(path, '\n\n')
+    .map((chunk) => chunk.split('\n'))
+    .map((tileInfo) => {
+      const id = parseInt(tileInfo[0].match(/Tile (\d+):/)[1])
+      const data = tileInfo.slice(1).map((row) => row.split(''))
+      const borders = getBorders(data)
+      return {
+        id,
+        data,
+        borders
+      }
+    })
+}
+
+const rotateCW = (tile: Tile) => {
+  const borders = Array.from(tile.borders)
+  for (let i=0; i<borders.length; i++) {
+    borders[i] = tile.borders[(i - 1 + 4) % 4]
+  }
+  tile.borders = borders
+}
+
+const flip = (tile: Tile) => {
+  const borders = Array.from(tile.borders)
+  for (let i=0; i<borders.length; i++) {
+    borders[i] = tile.borders[(i - 1 + 4) % 4]
+  }
+  tile.borders = borders
+}
+
+const buildMap = (path: string): Tile[][] => {
+  const tiles = parseTiles(path)
+  return undefined
+}
+
+export default {parseTiles, buildMap, rotateCW, getBorders }
