@@ -197,14 +197,14 @@ const rotateCW = (tile: Tile) => {
   for (let i = 0; i < borders.length; i++) {
     borders[i] = tile.borders[(i - 1 + 4) % 4]
   }
+
   tile.borders = borders
 }
 
+// Flip left to right
 const flip = (tile: Tile) => {
-  const borders = Array.from(tile.borders)
-  for (let i = 0; i < borders.length; i++) {
-    borders[i] = tile.borders[(i - 1 + 4) % 4]
-  }
+  const reversedData = tile.data.map((row) => row.reverse())
+  const borders = getBorders(reversedData)
   tile.borders = borders
 }
 
@@ -213,4 +213,4 @@ const buildMap = (path: string): Tile[][] => {
   return undefined
 }
 
-export default { parseTiles, buildMap, rotateCW }
+export default { parseTiles, buildMap, rotateCW, flip }
