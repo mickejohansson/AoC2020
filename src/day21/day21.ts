@@ -1,9 +1,13 @@
 import fileReader from '../util/fileReader'
 import * as _ from 'lodash'
 
-const solve = (path: string): number => {
-  const possibleBadIngredients: Map<string, string[]> = new Map()
-  const input = fileReader
+interface Food {
+  ingredients: string[]
+  allergens: string[]
+}
+
+const parseInput = (path: string): Food[] => {
+  return fileReader
     .readStringArray(path)
     .map((line) => line.match(/^([\S ]+) \(contains ([\S ]+)\)$/))
     .map((match) => {
@@ -12,8 +16,12 @@ const solve = (path: string): number => {
         allergens: match[2].split(', ')
       }
     })
+}
 
-  input.forEach((r) => {
+const getBadIngredients = (foods: Food[]): Map<string, string> => {
+  const possibleBadIngredients: Map<string, string[]> = new Map()
+
+  foods.forEach((r) => {
     r.allergens.forEach((allergen) => {
       if (possibleBadIngredients.has(allergen)) {
         possibleBadIngredients.set(
@@ -43,11 +51,17 @@ const solve = (path: string): number => {
 
     i++
   }
+  return badIngredients
+}
+
+const safeIngredients = (path: string): string[] => {
+  const input = parseInput(path)
+  const badIngredients = getBadIngredients(input)
 
   const safeIngredients = input
     .reduce((acc, curr) => acc.concat(curr.ingredients), [])
     .filter((ingredient) => !badIngredients.has(ingredient))
-  return safeIngredients.length
+  return safeIngredients
 }
 
-export default { solve }
+export default { safeIngredients }
