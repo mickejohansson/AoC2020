@@ -39,14 +39,12 @@ const play = (path: string): number => {
 const playRecursive = (decks: number[][]): number => {
   const previousRoundDecks: string[] = []
 
-  //console.log('New game', decks)
-
   let i = 1
   while (decks[0].length > 0 && decks[1].length > 0) {
     // If these hands have been played in a previous round, player 1 wins the game
     const round = decks[0].join(',') + ':' + decks[1].join(',')
     if (previousRoundDecks.includes(round)) {
-      return 1
+      return 0
     } else {
       previousRoundDecks.push(round)
     }
@@ -62,8 +60,6 @@ const playRecursive = (decks: number[][]): number => {
 
     const loser = (winner + 1) % 2
 
-    //    console.log('Round ' + i + ' winner ' + (winner + 1), decks)
-
     decks[winner].push(decks[winner][0])
     decks[winner].push(decks[loser][0])
 
@@ -78,8 +74,6 @@ const playRecursive = (decks: number[][]): number => {
 
 const playRecursiveGame = (decks: number[][]): number => {
   const winner = playRecursive(decks)
-
-  console.log('Post game', decks)
 
   return score(decks[winner])
 }

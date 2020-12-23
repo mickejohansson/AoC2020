@@ -8,8 +8,7 @@ test('it plays a game and returns the winning result', () => {
 test('it plays a game of recursive combar and returns the winning result', () => {
   let startDecks = day22.startDecks(__dirname + '/testInput.txt')
   expect(day22.playRecursiveGame(startDecks)).toBe(291)
-  /*
+
   startDecks = day22.startDecks(__dirname + '/input.txt')
-  expect(day22.playRecursiveGame(startDecks)).toBe(291)
-  */
+  expect(day22.playRecursiveGame(startDecks)).toBe(33745)
 })
