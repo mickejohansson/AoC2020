@@ -36,4 +36,8 @@ const play = (path: string): number => {
   return score(decks[0].length === 0 ? decks[1] : decks[0])
 }
 
-export default { play }
+const playRecursiveGame = (startDecks: number[][]): number => {
+  return undefined
+}
+
+export default { play, startDecks, playRecursiveGame }
