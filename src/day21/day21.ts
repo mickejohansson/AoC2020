@@ -3,7 +3,7 @@ import * as _ from 'lodash'
 
 const solve = (path: string): number => {
   const possibleBadIngredients: Map<string, string[]> = new Map()
-  const a = fileReader
+  fileReader
     .readStringArray(path)
     .map((line) => line.match(/^([\S ]+) \(contains ([\S ]+)\)$/))
     .map((match) => {
@@ -25,7 +25,28 @@ const solve = (path: string): number => {
       })
     })
 
-  console.log('possible', possibleBadIngredients)
+  const badIngredients: Map<string, string> = new Map()
+  let a = Array.from(possibleBadIngredients)
+  let i = 0
+  console.log('a', a)
+  console.log('bad', badIngredients)
+  while (a.length > 0) {
+    a.filter((entry) => entry[1].length === 1).forEach((entry) => {
+      badIngredients.set(entry[1][0], entry[0])
+    })
+    a = a.filter((entry) => entry[1].length > 1)
+
+    a.forEach((entry) => {
+      entry[1] = entry[1].filter(
+        (ingredient) => !badIngredients.has(ingredient)
+      )
+    })
+
+    console.log('a', a)
+    console.log('bad', badIngredients)
+    i++
+  }
+
   return undefined
 }
 
