@@ -64,4 +64,15 @@ const safeIngredients = (path: string): string[] => {
   return safeIngredients
 }
 
-export default { safeIngredients }
+const dangerousIngredients = (path: string): string => {
+  const input = parseInput(path)
+  const badIngredients = getBadIngredients(input)
+
+  const array = Array.from(badIngredients.entries())
+  return array
+    .sort((e1, e2) => e1[1].localeCompare(e2[1]))
+    .map((e) => e[0])
+    .join(',')
+}
+
+export default { safeIngredients, dangerousIngredients }
