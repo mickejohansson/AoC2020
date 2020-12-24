@@ -1,5 +1,3 @@
-import { isLabeledStatement } from "typescript"
-
 export interface Cup {
   label: number
   next: Cup
@@ -37,7 +35,7 @@ const removeAfter = (cup: Cup, nbrCups: number): Cup => {
 const addAfter = (cup: Cup, newCups: Cup) => {
   let end = newCups
   while (end.next) {
-    end = newCups.next
+    end = end.next
   }
 
   end.next = cup.next
@@ -45,22 +43,22 @@ const addAfter = (cup: Cup, newCups: Cup) => {
 }
 
 const find = (cup: Cup, matcher: (c: Cup) => boolean): Cup => {
-  let found = cup
-  while (found.next !== cup) {
-    if (matcher(found)) {
-      return found
+  let next = cup.next
+  while (next !== cup) {
+    if (matcher(next)) {
+      return next
     }
 
-    found = found.next
+    next = next.next
   }
 
-  return undefined
+  return matcher(cup) ? cup : undefined
 }
 
-const labels = (cup: Cup): string => {
+const toString = (cup: Cup): string => {
   let s = cup.label.toString()
   let next = cup.next
-  while (next != cup) {
+  while (next && next != cup) {
     s += next.label
     next = next.next
   }
@@ -70,11 +68,9 @@ const labels = (cup: Cup): string => {
 
 const play = (input: string, nbrMoves: number): string => {
   let currentCup = parseCups(input)
-
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < nbrMoves; i++) {
     // Pick up the three next cups
     const removed = removeAfter(currentCup, 3)
-    console.log('removed', removed)
 
     // Find the destination
     let destination: Cup = undefined
@@ -86,7 +82,6 @@ const play = (input: string, nbrMoves: number): string => {
       }
       destination = find(currentCup, cup => cup.label === destinationLabel)
     }
-    console.log('destination', destination)
 
     // Add removed cups
     addAfter(destination, removed)
@@ -95,7 +90,7 @@ const play = (input: string, nbrMoves: number): string => {
   }
 
   const first = find(currentCup, cup => cup.label === 1)
-  return labels(first)
+  return toString(first).substring(1)
 }
 
-export default { parseCups, find, removeAfter, addAfter,  play }
+export default { parseCups, find, removeAfter, addAfter,  play, toString }
