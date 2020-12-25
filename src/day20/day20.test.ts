@@ -191,7 +191,7 @@ test('it finds the roughness', () => {
     '#..###....##.#...##.##.#'
   ]
 
-  expect(day20.roughness(testImage)).toBe(2)
+  expect(day20.roughness(testImage)).toBe(273)
 })
 /*
 test('it rotates a tile', () => {

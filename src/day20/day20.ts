@@ -234,7 +234,7 @@ const roughness = (image: string[]): number => {
   const regex = new RegExp('#[#.]{'+ (image[0].length - 19) +'}#[#.]{4}##[#.]{4}##[#.]{4}###[#.]{'+ (image[0].length - 19) +'}#([#.]{2}#){5}', 'g')
   const matches = image.join('').match(regex)
   console.log('matches', matches)
-  return matches.length
+  return image.flatMap(line => line.split('')).filter(s => s === '#').length - matches.length * 15
 }
 
 export default { parseTiles, rotateCW, flipHorizontal, getBorders, buildMap, cornerProduct, getImage, roughness }
