@@ -45,20 +45,23 @@ const fromBinary = (bin: string[]): number => {
   return parseInt(bin.join(''), 2)
 }
 
-const getBorders = (tile: Tile): number[] => {
+const getBorders = (tile: Tile, excludeBorders: number[] = []): number[] => {
   const bin: string[][] = tile.data.map((row) =>
     row.map((c) => (c === '#' ? '1' : '0'))
   )
 
-  return [
-    fromBinary(bin[0]), // TOP
-    fromBinary(bin.map((row) => row[row.length - 1])), // RIGHT
-    fromBinary(bin[bin.length - 1].map((c) => c)), // BOTTOM
-    fromBinary(
-      bin
+  const top = fromBinary(bin[0])
+  const right = fromBinary(bin.map((row) => row[row.length - 1]))
+  const bottom = fromBinary(bin[bin.length - 1].map((c) => c))
+  const left = fromBinary(bin
         .map((row) => row[0])
-        .map((c) => c)
-    ) // LEFT 
+        .map((c) => c))
+
+  return [
+    excludeBorders.includes(top) ? -1 : top,
+    excludeBorders.includes(right) ? -1 : right,
+    excludeBorders.includes(bottom) ? -1 : bottom,
+    excludeBorders.includes(left) ? -1 : left
   ]
 }
 
@@ -102,14 +105,104 @@ const cornerProduct = (path: string): number => {
   return findCorners(tiles).map(t => t.id).reduce((acc, curr) => acc * curr, 1)
 }
 
-const buildMap = (path: string): Tile[][] => {
-  const tiles = parseTiles(path)
+interface MatchedTile {
+  tile: Tile
+  borders: number[]
+}
 
-  const corners = findCorners(tiles)
-  console.log('corners', corners)
+const matchTile = (topBorder: number, leftBorder: number, tiles: Tile[], sideBorders: number[]): MatchedTile => {
+  for(let i=0; i<tiles.length; i++) {
+    let tile = tiles[i]
+    for(let r=0; r<4; r++) {
+      tile = rotateCW(tile)
+      const borders = getBorders(tile, sideBorders)
+      //console.log('Checking border for ' + tile.id, borders)
+      if (borders[Side.TOP] === topBorder && borders[Side.LEFT] === leftBorder) {
+        return {
+          tile,
+          borders
+        }
+      }
+    }
+    tile = flipHorizontal(tile)
+    for(let r=0; r<4; r++) {
+      tile = rotateCW(tile)
+      const borders = getBorders(tile, sideBorders)
+      //console.log('Checking inv border for ' + tile.id, borders)
+      if (borders[Side.TOP] === topBorder && borders[Side.LEFT] === leftBorder) {
+        return {
+          tile,
+          borders
+        }
+      }
+    }
+  }
 
-
+  console.log('Failed finding match for top: ' + topBorder + ' left: ' + leftBorder)
   return undefined
+}
+
+const increaseCount = (map: Map<number, number>, borders: number[]) => {
+  borders.forEach(b => {
+    const count = map.get(b)
+    if (count) {
+      map.set(b, count + 1)
+    } else {
+      map.set(b, 1)
+    }
+  })
+}
+
+const getSides = (tiles: Tile[]): number[] => {
+  const borders: Map<number, number> = new Map()
+  tiles.forEach(tile => {
+    let b = getBorders(tile)
+    increaseCount(borders, b)
+    tile = flipHorizontal(tile)
+    tile = rotateCW(tile)
+    b = getBorders(tile)
+    increaseCount(borders, b)
+  })
+
+  return Array.from(borders).filter(entry => entry[1] === 1).map(entry => entry[0])
+}
+
+const removeTile = (tile: Tile, tiles: Tile[]): Tile[] => {
+  const index = tiles.findIndex(t => t.id === tile.id)
+  tiles.splice(index, 1)
+  return tiles
+}
+
+const buildMap = (path: string): MatchedTile[][] => {
+  let tiles = parseTiles(path)
+
+  //const corners = findCorners(tiles)
+  //console.log('corners', corners)
+
+  const sides = getSides(tiles)
+  console.log('sides', sides)
+
+
+  const width = Math.sqrt(tiles.length)
+  const map: MatchedTile[][] = []
+  for(let y = 0; y < width; y++) {
+    const row = []
+    for(let x = 0; x < width; x++) { 
+      //console.log('checking ' + x + ':' + y)
+      const left = x > 0 ? row[x-1].borders[Side.RIGHT] : -1
+      const top = y > 0 ? map[y-1][x].borders[Side.BOTTOM] : -1
+      const matchedTile = matchTile(top, left, tiles, sides)
+      //console.log('Fit for left: ' + left + ' top: ' + top, matchedTile)
+      tiles = removeTile(matchedTile.tile, tiles)
+      //console.log('length', tiles.length)
+      row.push(matchedTile)
+    }
+    map.push(row)
+  }
+  console.log('map', map)
+
+
+  return map
 }
 
 export default { parseTiles, rotateCW, flipHorizontal, getBorders, buildMap, cornerProduct }

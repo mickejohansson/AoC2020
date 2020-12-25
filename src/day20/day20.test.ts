@@ -118,14 +118,18 @@ test('it gets the borders of a tile', () => {
   expect(day20.getBorders(tiles[0])).toMatchObject([210, 89, 231, 498])
 })
 
-test('it builds a map', () => {
-  const map = day20.buildMap(__dirname + '/testInput.txt')
-})
-
 test('it calculates the product of the corner ids', () => {
   expect(day20.cornerProduct(__dirname + '/testInput.txt')).toBe(20899048083289)
   expect(day20.cornerProduct(__dirname + '/input.txt')).toBe(28057939502729)
 })
+
+test('it builds a map', () => {
+  let map = day20.buildMap(__dirname + '/testInput.txt')
+  expect(map.length).toBe(3)
+  map = day20.buildMap(__dirname + '/input.txt')
+  expect(map.length).toBe(12)
+})
+
 /*
 test('it rotates a tile', () => {
   const testTile: Tile = {
