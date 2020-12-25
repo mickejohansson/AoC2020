@@ -8,8 +8,10 @@ test('it gets a tile coordinate', () => {
 
 test('it flips tiles', () => {
   let lines = fileReader.readStringArray(__dirname + '/testInput.txt')
-  expect(day24.flipTiles(lines)).toBe(10)
+  let tiles = day24.flipTiles(lines)
+  expect(day24.nbrFlipped(tiles)).toBe(10)
 
   lines = fileReader.readStringArray(__dirname + '/input.txt')
-  expect(day24.flipTiles(lines)).toBe(322)
+  tiles = day24.flipTiles(lines)
+  expect(day24.nbrFlipped(tiles)).toBe(322)
 })

@@ -31,7 +31,18 @@ const tileCoordinate = (line: string): Coordinate  => {
   return coordinate
 }
 
-const flipTiles = (lines: string[]): number => {
+const nbrFlipped = (tiles: Map<string, boolean>): number => {
+  let nbrFlipped = 0
+  tiles.forEach(val => {
+    if (val) {
+      nbrFlipped++
+    }
+  })
+
+  return nbrFlipped
+}
+
+const flipTiles = (lines: string[]): Map<string, boolean> => {
   const tiles: Map<string, boolean> = new Map()
 
   lines.forEach(line => {
@@ -44,14 +55,7 @@ const flipTiles = (lines: string[]): number => {
     }
   })
 
-  let nbrFlipped = 0
-  tiles.forEach(val => {
-    if (val) {
-      nbrFlipped++
-    }
-  })
-
-  return nbrFlipped
+  return tiles
 }
 
-export default { tileCoordinate, flipTiles }
+export default { tileCoordinate, flipTiles, nbrFlipped }
