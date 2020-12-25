@@ -1,6 +1,6 @@
 export interface Coordinate {
   x: number
-  y:number
+  y: number
 }
 
 const add =(c1:Coordinate, c2: Coordinate): Coordinate => {
@@ -9,6 +9,18 @@ const add =(c1:Coordinate, c2: Coordinate): Coordinate => {
 
 const hash = (coordinate: Coordinate): string => {
   return coordinate.x + ':' + coordinate.y
+}
+
+const neighbours = (coord: string): string[] => {
+  const coordinates = coord.split(':').map(s => parseInt(s))
+  const coordinate: Coordinate = { x: coordinates[0], y: coordinates[1]}
+
+  const hashes = []
+  directionCoordinates.forEach(val => {
+    hashes.push(hash(add(coordinate, val)))
+  })
+
+  return hashes
 }
 
 const directionCoordinates: Map<string, Coordinate> = new Map()
@@ -58,4 +70,37 @@ const flipTiles = (lines: string[]): Map<string, boolean> => {
   return tiles
 }
 
-export default { tileCoordinate, flipTiles, nbrFlipped }
+
+const flipDay = (tiles: Map<string, boolean>): Map<string, boolean> => {
+  const newTiles: Map<string, boolean> = new Map()
+
+  tiles.forEach((flipped, hashed) => {
+
+    // Add all the surrounding neighbours
+    if (flipped) {
+      neighbours(hashed).forEach(n => {
+        if (!tiles.has(n)) {
+          tiles.set(n, false)
+        }
+      })
+    }
+  })
+
+  tiles.forEach((flipped, hashed) => {
+    const nbrFlippedNeighbours = neighbours(hashed).filter(h => tiles.has(h) && tiles.get(h) === true).length
+
+    if (flipped && (nbrFlippedNeighbours === 0 || nbrFlippedNeighbours > 2)) {
+      newTiles.set(hashed, false)
+    } else if (!flipped && nbrFlippedNeighbours === 2) {
+      newTiles.set(hashed, true)
+    } else {
+      newTiles.set(hashed, flipped)
+    }
+  })
+
+  return newTiles
+
+  return tiles
+}
+
+export default { tileCoordinate, flipTiles, nbrFlipped, flipDay }

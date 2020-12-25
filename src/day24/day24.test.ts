@@ -15,3 +15,23 @@ test('it flips tiles', () => {
   tiles = day24.flipTiles(lines)
   expect(day24.nbrFlipped(tiles)).toBe(322)
 })
+
+test('it flips tiles during several days', () => {
+  let lines = fileReader.readStringArray(__dirname + '/testInput.txt')
+  let tiles = day24.flipTiles(lines)
+  expect(day24.nbrFlipped(tiles)).toBe(10)
+
+  for (let i=0; i<100; i++) {
+    tiles = day24.flipDay(tiles)
+  }
+  expect(day24.nbrFlipped(tiles)).toBe(2208)
+
+  lines = fileReader.readStringArray(__dirname + '/input.txt')
+  tiles = day24.flipTiles(lines)
+  expect(day24.nbrFlipped(tiles)).toBe(322)
+
+  for (let i=0; i<100; i++) {
+    tiles = day24.flipDay(tiles)
+  }
+  expect(day24.nbrFlipped(tiles)).toBe(3831)
+})
