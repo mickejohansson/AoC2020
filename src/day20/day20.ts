@@ -205,7 +205,32 @@ const buildMap = (path: string): MatchedTile[][] => {
   return map
 }
 
-export default { parseTiles, rotateCW, flipHorizontal, getBorders, buildMap, cornerProduct }
+const getImage = (path: string): string[] => {
+  const map = buildMap(path)
+
+  let image: string[] = []
+  let rowNbr = 0 
+  for(let y=0; y<map.length; y++) {
+    for(let x=0; x<map.length; x++) {
+      const data = map[y][x].tile.data
+      for (let col=1; col<data.length - 1; col++) {
+        if (!image[rowNbr + col]) {
+          image[rowNbr + col] = ''
+        }
+        image[rowNbr + col] += data[col].slice(1, -1).join('') //'|col ' + col + ' x: ' + x + ' y: ' + y + '|'
+      }
+    }
+    rowNbr += 8 
+  }
+
+  // TODO fix!
+  image = image.slice(1)
+  console.log('image', image)
+
+  return image
+}
+
+export default { parseTiles, rotateCW, flipHorizontal, getBorders, buildMap, cornerProduct, getImage }
 
 /*
 const fromBinary = (bin: string[]): number => {
