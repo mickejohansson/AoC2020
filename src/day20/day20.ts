@@ -238,23 +238,35 @@ const flipImage = (image: string[]): string[] => {
   return image.map(row => row.split('').reverse()).map(row => row.join(''))
 }
 
+const findAllMonsters = (regex: RegExp, image: string): number => {
+  let match = regex.exec(image)
+  let nbrMatches = 0
+  while (match) {
+    console.log('match', match)
+    nbrMatches++
+    regex.lastIndex = match.index + 1
+    match = regex.exec(image)
+  }
+  return nbrMatches
+}
+
 const findMonsters = (image: string[]): number => {
   const regex = new RegExp('#[#.]{'+ (image[0].length - 19) +'}#[#.]{4}##[#.]{4}##[#.]{4}###[#.]{'+ (image[0].length - 19) +'}#([#.]{2}#){5}', 'g')
   for(let i=0; i<4; i++) {
     image = rotateImage(image)
-    const matches = image.join('').match(regex)
+    let matches = image.join('').match(regex)
     console.log('matches', matches)
     if (matches) {
-      return matches.length
+      return findAllMonsters(regex, image.join(''))
     }
   }
   image = flipImage(image)
   for(let i=0; i<4; i++) {
     image = rotateImage(image)
-    const matches = image.join('').match(regex)
+    let matches = image.join('').match(regex)
     console.log('matches', matches)
     if (matches) {
-      return matches.length
+      return findAllMonsters(regex, image.join(''))
     }
   }
 

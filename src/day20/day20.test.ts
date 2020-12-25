@@ -249,10 +249,8 @@ test('it finds the roughness', () => {
 
   expect(day20.roughness(testImage)).toBe(273)
 
-  /*
   const image = day20.getImage(__dirname + '/input.txt')
-  expect(day20.roughness(image)).toBe(273)
-  */
+  expect(day20.roughness(image)).toBe(2489)
 })
 /*
 test('it rotates a tile', () => {
