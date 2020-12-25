@@ -1,4 +1,5 @@
 import fileReader from '../util/fileReader'
+import * as _ from 'lodash'
 
 export enum Side {
   TOP = 0,
@@ -10,9 +11,110 @@ export enum Side {
 export interface Tile {
   id: number
   data: string[][]
-  borders: number[]
 }
 
+const parseTiles = (path: string): Tile[] => {
+  return fileReader
+    .readStringArray(path, '\n\n')
+    .map((chunk) => chunk.split('\n'))
+    .map((tileInfo) => {
+      const id = parseInt(tileInfo[0].match(/Tile (\d+):/)[1])
+      const data = tileInfo.slice(1).map((row) => row.split(''))
+      return {
+        id,
+        data,
+      }
+    })
+}
+
+const rotateCW = (tile: Tile): Tile => {
+  return {
+      id: tile.id,
+      data: tile.data[0].map((_, index) => tile.data.map(row => row[index]).reverse())
+    }
+}
+
+const flipHorizontal = (tile: Tile): Tile => {
+  return {
+    id: tile.id,
+    data: tile.data.map(row => Array.from(row).reverse())
+  }
+}
+
+const fromBinary = (bin: string[]): number => {
+  return parseInt(bin.join(''), 2)
+}
+
+const getBorders = (tile: Tile): number[] => {
+  const bin: string[][] = tile.data.map((row) =>
+    row.map((c) => (c === '#' ? '1' : '0'))
+  )
+
+  return [
+    fromBinary(bin[0]), // TOP
+    fromBinary(bin.map((row) => row[row.length - 1])), // RIGHT
+    fromBinary(bin[bin.length - 1].map((c) => c)), // BOTTOM
+    fromBinary(
+      bin
+        .map((row) => row[0])
+        .map((c) => c)
+    ) // LEFT 
+  ]
+}
+
+const findMatching = (tile: Tile, side: Side, tiles: Tile[]): Tile => {
+  const tileBorders = getBorders(tile)
+  for(let i=0; i<tiles.length; i++) {
+    let t = tiles[i]
+    if (t.id !== tile.id) {
+      let borders = getBorders(t)
+      if (borders.includes(tileBorders[side])) {
+        return t
+      }
+      t = flipHorizontal(t)
+      t = rotateCW(t)
+      borders = getBorders(t)
+      if (borders.includes(tileBorders[side])) {
+        return t
+      }
+    }
+  }
+
+  return undefined
+}
+
+const findNeighbours = (tile: Tile, tiles: Tile[]): Tile[] => {
+  return [
+    findMatching(tile, Side.TOP, tiles),
+    findMatching(tile, Side.RIGHT, tiles),
+    findMatching(tile, Side.BOTTOM, tiles),
+    findMatching(tile, Side.LEFT, tiles),
+  ]
+}
+
+const findCorners = (tiles: Tile[]): Tile[] => {
+  return tiles.filter(t => findNeighbours(t, tiles)
+                  .filter(n => n !== undefined).length === 2)
+}
+
+const cornerProduct = (path: string): number => {
+  const tiles = parseTiles(path)
+  return findCorners(tiles).map(t => t.id).reduce((acc, curr) => acc * curr, 1)
+}
+
+const buildMap = (path: string): Tile[][] => {
+  const tiles = parseTiles(path)
+
+  const corners = findCorners(tiles)
+  console.log('corners', corners)
+
+
+  return undefined
+}
+
+export default { parseTiles, rotateCW, flipHorizontal, getBorders, buildMap, cornerProduct }
+
+/*
 const fromBinary = (bin: string[]): number => {
   return parseInt(bin.join(''), 2)
 }
@@ -129,3 +231,4 @@ export default {
   findMatchingTile,
   cornerProduct
 }
+*/
