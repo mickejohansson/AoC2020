@@ -1,96 +1,82 @@
-export interface Cup {
-  label: number
-  next: Cup
-}
-
-const parseCups = (labels: string): Cup => {
-  const cups: Cup[] = labels
-    .split('')
-    .map((l) => {
-      return {
-        label: parseInt(l),
-        next: undefined
-      }
-    })
-
-  cups.forEach((c, i) => {
-    c.next = cups[(i + 1) % cups.length]
+const parseCups = (labels: number[]): Map<number, number> => {
+  const map: Map<number, number> = new Map()
+  labels.forEach((l, index) => {
+    map.set(l, labels[(index + 1) % labels.length])
   })
 
-  return cups[0]
+  return map
 }
 
-const removeAfter = (cup: Cup, nbrCups: number): Cup => {
-  const next = cup.next
-  let end = cup
-  for (let i=0; i<nbrCups; i++) {
-    end = end.next
-  }
-
-  cup.next = end.next
-  end.next = undefined
-  return next
-}
-
-const addAfter = (cup: Cup, newCups: Cup) => {
-  let end = newCups
-  while (end.next) {
-    end = end.next
-  }
-
-  end.next = cup.next
-  cup.next = newCups
-}
-
-const find = (cup: Cup, matcher: (c: Cup) => boolean): Cup => {
-  let next = cup.next
-  while (next !== cup) {
-    if (matcher(next)) {
-      return next
-    }
-
-    next = next.next
-  }
-
-  return matcher(cup) ? cup : undefined
-}
-
-const toString = (cup: Cup): string => {
-  let s = cup.label.toString()
-  let next = cup.next
-  while (next && next != cup) {
-    s += next.label
-    next = next.next
+const toString = (cups: Map<number, number>, cup: number, delimeter: string = ''): string => {
+  let s = '' + cup
+  let next = cups.get(cup)
+  while (next !== undefined && next !== cup) {
+    s += delimeter
+    s += next
+    next = cups.get(next)
   }
 
   return s
 }
 
-const play = (input: string, nbrMoves: number): string => {
-  let currentCup = parseCups(input)
+const removeAfter = (map: Map<number, number>, cup:number, nbrCups: number): number => {
+  let first = map.get(cup)
+  let last = first
+  for (let i=0; i<nbrCups - 1; i++) {
+    last = map.get(last)
+  }
+
+  map.set(cup, map.get(last))
+  map.set(last, undefined)
+
+  return first
+}
+
+const addAfter = (cups: Map<number, number>, cup: number, newCups: number) => {
+  let end = newCups
+  while (cups.get(end) !== undefined) {
+    end = cups.get(end)
+  }
+
+  cups.set(end, cups.get(cup))
+  cups.set(cup, newCups)
+}
+
+const includes = (cups: Map<number, number>, start: number, toFind: number): boolean => {
+  let next = start
+  while (next !== undefined) {
+    if (next === toFind) {
+      return true
+    }
+    next = cups.get(next)
+  }
+
+  return false
+}
+
+const play = (input: number[], nbrMoves: number): Map<number, number> => {
+  const cups = parseCups(input)
+  let currentCup = input[0]
   for (let i = 0; i < nbrMoves; i++) {
     // Pick up the three next cups
-    const removed = removeAfter(currentCup, 3)
+    const removed = removeAfter(cups, currentCup, 3)
 
     // Find the destination
-    let destination: Cup = undefined
-    let destinationLabel = currentCup.label
-    while (!destination) {
-      destinationLabel--
-      if (destinationLabel < 1) {
-        destinationLabel = 9
+    let destination = currentCup
+    while (destination === currentCup || includes(cups ,removed, destination)) {
+      destination--
+      if (destination < 1) {
+        destination = input.length
       }
-      destination = find(currentCup, cup => cup.label === destinationLabel)
     }
 
     // Add removed cups
-    addAfter(destination, removed)
+    addAfter(cups, destination, removed)
 
-    currentCup = currentCup.next
+    currentCup = cups.get(currentCup)
   }
 
-  const first = find(currentCup, cup => cup.label === 1)
-  return toString(first).substring(1)
+  return cups
 }
 
-export default { parseCups, find, removeAfter, addAfter,  play, toString }
+export default { parseCups, removeAfter, addAfter, toString, play }
