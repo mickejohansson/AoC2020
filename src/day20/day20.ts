@@ -230,11 +230,41 @@ const getImage = (path: string): string[] => {
   return image
 }
 
-const roughness = (image: string[]): number => {
+const rotateImage = (image: string[]) => {
+  return image.map(line => line.split(''))[0].map((_, index) => image.map(row => row[index]).reverse()).map(row => row.join(''))
+}
+
+const flipImage = (image: string[]): string[] => {
+  return image.map(row => row.split('').reverse()).map(row => row.join(''))
+}
+
+const findMonsters = (image: string[]): number => {
   const regex = new RegExp('#[#.]{'+ (image[0].length - 19) +'}#[#.]{4}##[#.]{4}##[#.]{4}###[#.]{'+ (image[0].length - 19) +'}#([#.]{2}#){5}', 'g')
-  const matches = image.join('').match(regex)
-  console.log('matches', matches)
-  return image.flatMap(line => line.split('')).filter(s => s === '#').length - matches.length * 15
+  for(let i=0; i<4; i++) {
+    image = rotateImage(image)
+    const matches = image.join('').match(regex)
+    console.log('matches', matches)
+    if (matches) {
+      return matches.length
+    }
+  }
+  image = flipImage(image)
+  for(let i=0; i<4; i++) {
+    image = rotateImage(image)
+    const matches = image.join('').match(regex)
+    console.log('matches', matches)
+    if (matches) {
+      return matches.length
+    }
+  }
+
+  return 0
+}
+
+const roughness = (image: string[]): number => {
+  const nbrMatches = findMonsters(image)
+  console.log('nbrmatches', nbrMatches)
+  return image.flatMap(line => line.split('')).filter(s => s === '#').length - nbrMatches * 15
 }
 
 export default { parseTiles, rotateCW, flipHorizontal, getBorders, buildMap, cornerProduct, getImage, roughness }
